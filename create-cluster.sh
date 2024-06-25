@@ -1,5 +1,5 @@
 # for L4 and spot node-pools
-export PROJECT_ID=<your-project-id>
+export PROJECT_ID=next24-genai-app
 export REGION=us-central1
 export ZONE_1=${REGION}-a # You may want to change the zone letter based on the region you selected above
 export ZONE_2=${REGION}-b # You may want to change the zone letter based on the region you selected above
