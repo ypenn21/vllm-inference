@@ -412,6 +412,14 @@ gcloud container clusters delete $CLUSTER_NAME — region $REGION
 This post tries to demonstrate how deploying Opensource LLM models such as Mistrial 7B and Llama2 7B/13B using vLLM on GKE is flexible and straightforward. 
 LLM operations and self manage AI ML workload in  flagship Managed kubernates platform GKE enables deploying LLM models in production, bringing ML Ops one step closer to existing platform teams with expertises in those managed platforms. Also, given the resources that are consumed, and the number of potential applications using AI/ML features moving forward, having a framework that offers scalability and cost control features simplifies adoption.
 
-Don't forget to check out other GKE related resources on AI ML infrastrucure offered by Google Cloud. 
+Spin up or down node pool
+```
+gcloud container clusters resize vllm-serving-cluster --node-pool vllm-inference-pool --num-nodes 1 --region us-central1
+kubectl apply -f vllm2-deploy.yaml -n vllm
 
+
+#scale down
+gcloud container clusters resize vllm-serving-cluster --node-pool vllm-inference-pool --num-nodes 0 --region us-central1
+kubectl delete deployment vllm-server -n vllm
+```
 
