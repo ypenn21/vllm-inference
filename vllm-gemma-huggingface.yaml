@@ -27,10 +27,17 @@ spec:
         - name: vllm-inference-server
           image: vllm/vllm-openai
           imagePullPolicy: IfNotPresent
-
           resources:
+            requests:
+              cpu: 7
+              memory: 50Gi
+              nvidia.com/gpu : 2
+              ephemeral-storage: 80Gi
             limits:
-              nvidia.com/gpu: 1
+              cpu: 7
+              memory: 50Gi
+              nvidia.com/gpu : 2
+              ephemeral-storage: 80Gi
           env:
             - name: HUGGING_FACE_HUB_TOKEN
               valueFrom:
@@ -48,7 +55,7 @@ spec:
                  "--trust-remote-code",
                  "--port=8000",
                  "--max-model-len=5000",
-                 "--tensor-parallel-size=1"]
+                 "--tensor-parallel-size=2"]
           ports:
             - containerPort: 8000
               name: http
