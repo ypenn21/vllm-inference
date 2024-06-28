@@ -48,6 +48,11 @@ spec:
               value: /.cache
             - name: shm-size
               value: 1g
+            - name: VLLM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: openapikey
+                  key: key
           command: ["python3", "-m", "vllm.entrypoints.openai.api_server"]
           args: ["--model=meta-llama/Llama-2-7b-chat-hf",
                  "--gpu-memory-utilization=0.95",

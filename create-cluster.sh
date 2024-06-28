@@ -42,6 +42,13 @@ gcloud iam service-accounts add-iam-policy-binding $GCE_SA \
     --role roles/iam.workloadIdentityUser \
     --member "serviceAccount:${PROJECT_ID}.svc.id.goog[${NAMESPACE}/${NAMESPACE}]"
 
+export OPEN_AI_KEY=<paste-token>
+kubectl create secret generic openapikey --from-literal="key=$OPEN_AI_KEY" -n vllm
+
+export HF_TOKEN=<paste-token>
+kubectl create secret generic huggingface --from-literal="HF_TOKEN=$HF_TOKEN" -n $NAMESPACE
+
+
 kubectl annotate serviceaccount $NAMESPACE \
     --namespace $NAMESPACE \
     iam.gke.io/gcp-service-account=$GCE_SA
