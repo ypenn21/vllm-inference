@@ -54,7 +54,7 @@ spec:
                   name: openapikey
                   key: key
           command: ["python3", "-m", "vllm.entrypoints.openai.api_server"]
-          args: ["--model=meta-llama/Llama-2-7b-chat-hf",
+          args: ["--model=meta-llama/Meta-Llama-3-8B-Instruct",
                  "--gpu-memory-utilization=0.95",
                  "--disable-log-requests",
                  "--trust-remote-code",
