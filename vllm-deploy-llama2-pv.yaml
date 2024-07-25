@@ -20,6 +20,9 @@ spec:
        - name: dshm
          emptyDir:
               medium: Memory
+      #- name: model-cache
+      #   persistentVolumeClaim:
+      #     claimName: model-cache-pvc
       nodeSelector:
         cloud.google.com/gke-accelerator: nvidia-l4
       serviceAccountName: vllm
@@ -30,13 +33,13 @@ spec:
           resources:
             requests:
               cpu: 7
-              memory: 24Gi
-              nvidia.com/gpu : 1
+              memory: 50Gi
+              nvidia.com/gpu : 2
               ephemeral-storage: 80Gi
             limits:
               cpu: 7
-              memory: 24Gi
-              nvidia.com/gpu : 1
+              memory: 50Gi
+              nvidia.com/gpu : 2
               ephemeral-storage: 80Gi
           env:
             - name: HUGGING_FACE_HUB_TOKEN
@@ -44,23 +47,19 @@ spec:
                 secretKeyRef:
                   name: huggingface
                   key: HF_TOKEN
-            - name: TRANSFORMERS_CACHE
+            - name: HF_HOME
               value: /.cache
             - name: shm-size
               value: 1g
-            - name: VLLM_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: openapikey
-                  key: key
           command: ["python3", "-m", "vllm.entrypoints.openai.api_server"]
-          args: ["--model=meta-llama/Meta-Llama-3.1-8B-Instruct",
+          args: ["--model=meta-llama/Llama-2-7b-chat-hf",
                  "--gpu-memory-utilization=0.95",
+                 "--load-format=auto",
                  "--disable-log-requests",
                  "--trust-remote-code",
                  "--port=8000",
                  "--max-model-len=4000",
-                 "--tensor-parallel-size=1"]
+                 "--tensor-parallel-size=2"]
           ports:
             - containerPort: 8000
               name: http
@@ -71,7 +70,38 @@ spec:
               name: dshm
             - mountPath: /.cache
               name: cache
-
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: model-cache-pv
+spec:
+  capacity:
+    storage: 50Gi  # Adjust based on your cache size needs
+  accessModes:
+    - ReadWriteOnce  # Or ReadWriteMany if using Filestore
+  persistentVolumeReclaimPolicy: Retain  # Keep data after PVC is deleted
+  storageClassName: standard  # Replace with your desired storage class
+  gcePersistentDisk:
+    pdName: model-cache-1  # Name of the existing PD (create this first)
+    fsType: ext4  # Or choose another filesystem
+  claimRef:
+    name: model-cache-pvc
+    namespace: vllm
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: model-cache-pvc # Match the name used in your deployment
+  namespace: vllm
+spec:
+  accessModes:
+    - ReadWriteOnce  
+  storageClassName: standard  # Make sure this matches your PV
+  volumeName: model-cache-pv
+  resources:
+    requests:
+      storage: 50Gi  # Same size as your PV
 ---
 apiVersion: v1
 kind: Service
