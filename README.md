@@ -505,12 +505,20 @@ LLM operations and self manage AI ML workload in  flagship Managed kubernates pl
 
 Spin up or down node pool
 ```
-gcloud container clusters resize vllm-serving-cluster --node-pool vllm-inference-pool --num-nodes 1 --region us-central1
+#Find cluster name & node pool name
+gcloud container clusters list
+export CLUSTER=vllm-serving-cluster
+gcloud container clusters get-credentials ${CLUSTER} --location us-central1
+gcloud container node-pools list --region us-central1 --cluster ${CLUSTER}
+export POOL=<pool>
+
+
+gcloud container clusters resize ${CLUSTER} --node-pool ${POOL} --num-nodes 1 --region us-central1
 kubectl apply -f vllm2-deploy.yaml -n vllm
 
 
 #scale down
-gcloud container clusters resize vllm-serving-cluster --node-pool vllm-inference-pool --num-nodes 0 --region us-central1
+gcloud container clusters resize ${CLUSTER} --node-pool ${POOL} --num-nodes 0 --region us-central1
 kubectl delete deployment vllm-server -n vllm
 ```
 
