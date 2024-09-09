@@ -510,7 +510,7 @@ gcloud container clusters list
 export CLUSTER=vllm-serving-cluster
 gcloud container clusters get-credentials ${CLUSTER} --location us-central1
 gcloud container node-pools list --region us-central1 --cluster ${CLUSTER}
-export POOL=g2-standard-24
+export POOL=g2-standard-24 #vllm-inference-pool
 
 
 gcloud container clusters resize ${CLUSTER} --node-pool ${POOL} --num-nodes 1 --region us-central1
